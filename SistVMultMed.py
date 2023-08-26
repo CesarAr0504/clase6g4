@@ -1,3 +1,4 @@
+
 class Medicamento:
     def __init__(self):
         self.__nombre = "" 
@@ -12,7 +13,7 @@ class Medicamento:
         self.__nombre = med 
     def asignarDosis(self,med):
         self.__dosis = med 
-        
+       
 class Mascota:
     
     def __init__(self):
@@ -22,6 +23,7 @@ class Mascota:
         self.__peso=" "
         self.__fecha_ingreso=" "
         self.__lista_medicamentos=[]
+        self.__lista_mascotas = {"caninos": [], "felinos": []}
         
     def verNombre(self):
         return self.__nombre
@@ -34,7 +36,17 @@ class Mascota:
     def verFecha(self):
         return self.__fecha_ingreso
     def verLista_Medicamentos(self):
-        return self.__lista_medicamentos 
+        return self.__lista_medicamentos
+    def verificarMedicamentosUnicos(self, n):
+        nombres_medicamentos = set()
+        for medicamento in n:
+            nombre = medicamento.verNombre()
+            if nombre not in nombres_medicamentos:
+                nombres_medicamentos.add(nombre)
+            else:
+                print("Error: No se puede ingresar dos medicamentos con el mismo nombre.")
+                return
+    
             
     def asignarNombre(self,n):
         self.__nombre=n
@@ -46,8 +58,10 @@ class Mascota:
         self.__peso=p
     def asignarFecha(self,f):
         self.__fecha_ingreso=f
-    def asignarLista_Medicamentos(self,n):
-        self.__lista_medicamentos = n 
+    def asignarLista_Medicamentos(self, n):
+        self.verificarMedicamentosUnicos(n)  # Verificar medicamentos únicos
+        self.__lista_medicamentos = n
+ 
     
 class sistemaV:
     def __init__(self):
@@ -59,12 +73,24 @@ class sistemaV:
                 return True
         #solo luego de haber recorrido todo el ciclo se retorna False
         return False
-        
+    
     def verNumeroMascotas(self):
         return len(self.__lista_mascotas) 
     
-    def ingresarMascota(self,mascota):
-        self.__lista_mascotas.append(mascota) 
+    def ingresarMascota(self, mascota):
+        tipo = mascota.verTipo().lower()
+        if tipo in self.__lista_mascotas:
+            mascotas_tipo = self.__lista_mascotas[tipo]
+            if len(mascotas_tipo) >= 10:
+                print("No hay espacio para más mascotas de este tipo.")
+                return
+            if not self.verificarExiste(mascota.verHistoria()):
+                mascotas_tipo.append(mascota)
+            else:
+                print("Ya existe una mascota con la misma historia clínica.")
+        else:
+            print("Tipo de mascota no válido.")
+
    
 
     def verFechaIngreso(self,historia):
@@ -115,7 +141,7 @@ def main():
                 lista_med=[]
 
                 for i in range(0,nm):
-                    nombre_medicamentos = input("Ingrese el nombre del medicamento: ")
+                    nombre_medicamentos = input("Ingrese el nombre del medicamento: ")     
                     dosis =int(input("Ingrese la dosis: "))
                     medicamento = Medicamento()
                     medicamento.asignarNombre(nombre_medicamentos)
